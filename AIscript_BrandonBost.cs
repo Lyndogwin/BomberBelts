@@ -12,6 +12,7 @@ public class AIscript_BrandonBost : MonoBehaviour {
     public float playerSpeed;
     public int[] beltDirections;
     public float[] buttonLocations;
+    public float[] bombDistances;
     public float opponentLoc;
     public float playerLoc;
 
@@ -48,23 +49,28 @@ public class AIscript_BrandonBost : MonoBehaviour {
 
     void ButtonSearch(){
         int target = 0;
+        int last = 0;
         bool picked = false;
+        bombDistances = mainScript.getBombDistances();
+        
         for(int i = 0; i < buttonLocations.Length; i++){
             Debug.Log("<color=purple> cuurent button cooldown"+buttonCooldowns[i]+"</color>");
             
-            if (buttonCooldowns[i] <= 0 && beltDirections[i] == -1){
+            if (buttonCooldowns[i] <= 0.5 && beltDirections[i] == -1 && bombDistances[i] <= bombDistances[last]){
                 target = i; // button at index become prefered state.
                 picked = true;
             }
             if(Math.Abs(playerLoc - buttonLocations[i]) < 1 && beltDirections[i] != 1 && buttonCooldowns[i] <= 0){
                 mainScript.push(); // push button if approaches a candidate enroute
             }
-            else if (buttonLocations[target] < playerLoc && picked) {
-                directUp = 0b_0;
-            }
-            else if (buttonLocations[target] > playerLoc && picked){
-                directUp = 0b_1;
-            }
+            
+            last = i;
+        }
+        if (buttonLocations[target] < playerLoc && picked) {
+            directUp = 0b_0;
+        }
+        else if (buttonLocations[target] > playerLoc && picked){
+            directUp = 0b_1;
         }
     }
 
@@ -84,13 +90,14 @@ public class AIscript_BrandonBost : MonoBehaviour {
         }
         
         */
+       
+        // prevent player lock in the case of no prefered targets
         if (lastLoc == playerLoc){
             directUp = ~directUp;
         }
 
         Debug.Log("<color=green>"+directUp+"</color>");
 
-        // prevent player lock in the case of no prefered targets
         if (timer > 7){
             Debug.Log("<color=red>"+playerLoc+ ", "+lastLoc+"</color>");
             lastLoc = playerLoc;
