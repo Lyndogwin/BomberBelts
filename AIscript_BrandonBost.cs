@@ -54,13 +54,14 @@ public class AIscript_BrandonBost : MonoBehaviour {
         bombDistances = mainScript.getBombDistances();
         
         for(int i = 0; i < buttonLocations.Length; i++){
-            Debug.Log("<color=purple> cuurent button cooldown"+buttonCooldowns[i]+"</color>");
+            //Debug.Log("<color=purple> cuurent button cooldown"+buttonCooldowns[i]+"</color>");
             
             if (buttonCooldowns[i] <= 0.5 && beltDirections[i] == -1 && bombDistances[i] <= bombDistances[last]){
                 target = i; // button at index become prefered state.
                 picked = true;
+                Debug.Log("<color=purple> distance from button = "+bombDistances[i]+"</color>");
             }
-            if(Math.Abs(playerLoc - buttonLocations[i]) < 1 && beltDirections[i] != 1 && buttonCooldowns[i] <= 0){
+            if(Math.Abs(playerLoc - buttonLocations[i]) < 1 && beltDirections[i] != 1 && buttonCooldowns[i] <= 0.5){
                 mainScript.push(); // push button if approaches a candidate enroute
             }
             
@@ -98,7 +99,7 @@ public class AIscript_BrandonBost : MonoBehaviour {
 
         Debug.Log("<color=green>"+directUp+"</color>");
 
-        if (timer > 7){
+        if (timer > 45){
             Debug.Log("<color=red>"+playerLoc+ ", "+lastLoc+"</color>");
             lastLoc = playerLoc;
             timer = 0;
